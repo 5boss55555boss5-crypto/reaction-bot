@@ -42,6 +42,16 @@ REACTIONS = [
     ("⚡",  1),
     ("🤩",  1),
     ("💪",  1),
+    ("🤣",  1),
+    ("😱",  1),
+    ("🤯",  1),
+    ("😢",  1),
+    ("🤔",  1),
+    ("😈",  1),
+    ("👀",  1),
+    ("🙏",  1),
+    ("😭",  1),
+    ("🤬",  1),
 ]
 REACTION_EMOJIS  = [r[0] for r in REACTIONS]
 REACTION_WEIGHTS = [r[1] for r in REACTIONS]
