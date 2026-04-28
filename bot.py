@@ -133,7 +133,12 @@ def get_sessions():
 
 async def run_account(session_str):
     client = TelegramClient(StringSession(session_str), API_ID, API_HASH)
-    await client.start()
+    await client.connect()
+
+    if not await client.is_user_authorized():
+        print(f"[SESSION_{session_str[:10]}...] не авторизована, пропускаємо")
+        await client.disconnect()
+        return
 
     me = await client.get_me()
     account = f"@{me.username}" if me.username else me.first_name
