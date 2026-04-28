@@ -27,6 +27,7 @@ CHANNELS = [
     "https://t.me/+X1PYq8Fj0i0wYWNi",
     "https://t.me/+Xo_zUF2qmLIwODky",
     "https://t.me/+QdZUYYVGpB5jN2Qy",
+    "https://t.me/+b0tq9Q-5EoVkZDRi",
 ]
 
 # ❤ 60%, 👍 15%, 🔥 10%, решта рідкісні
