@@ -59,8 +59,13 @@ REACTIONS = [
 REACTION_EMOJIS  = [r[0] for r in REACTIONS]
 REACTION_WEIGHTS = [r[1] for r in REACTIONS]
 
-DELAY_MIN = 20
-DELAY_MAX = 1800
+# Кожен акаунт має свій діапазон затримок
+ACCOUNT_DELAYS = [
+    (20,   900),   # акаунт 1: 20с–15хв
+    (300,  1800),  # акаунт 2: 5хв–30хв
+    (120,  1200),  # акаунт 3: 2хв–20хв
+    (600,  2700),  # акаунт 4: 10хв–45хв
+]
 
 SYSTEM_PROMPT = """Ти аналізуєш пости у футбольних та спортивних Telegram каналах.
 Вибери ОДНУ найбільш підходящу реакцію на пост з цього списку:
@@ -100,8 +105,8 @@ async def choose_reaction(text: str) -> str:
     return random.choices(REACTION_EMOJIS, weights=REACTION_WEIGHTS, k=1)[0]
 
 
-async def react(client, account, peer, msg_id, channel, text):
-    delay = random.randint(DELAY_MIN, DELAY_MAX)
+async def react(client, account, peer, msg_id, channel, text, delay_range):
+    delay = random.randint(*delay_range)
     emoji = await choose_reaction(text)
 
     print(f"[{datetime.now().strftime('%H:%M:%S')}] [{account}] "
@@ -131,7 +136,7 @@ def get_sessions():
     return sessions
 
 
-async def run_account(session_str):
+async def run_account(session_str, index):
     client = TelegramClient(StringSession(session_str), API_ID, API_HASH)
     await client.connect()
 
@@ -172,7 +177,8 @@ async def run_account(session_str):
         entity_ids.add(e.id)
         entity_ids.add(-1000000000000 - e.id)
 
-    print(f"[{account}] слухає {len(entities)} каналів")
+    delay_range = ACCOUNT_DELAYS[index % len(ACCOUNT_DELAYS)]
+    print(f"[{account}] слухає {len(entities)} каналів | затримка {delay_range[0]}–{delay_range[1]}с")
 
     @client.on(events.NewMessage())
     async def handler(event):
@@ -184,7 +190,7 @@ async def run_account(session_str):
             return
         name = getattr(event.chat, "username", None) or getattr(event.chat, "title", str(event.chat_id))
         text = event.message.text or ""
-        asyncio.ensure_future(react(client, account, event.chat_id, event.message.id, name, text))
+        asyncio.ensure_future(react(client, account, event.chat_id, event.message.id, name, text, delay_range))
 
     await client.run_until_disconnected()
 
@@ -196,7 +202,7 @@ async def main():
         return
     print(f"Запускаємо {len(sessions)} акаунт(ів)...")
     print("-" * 50)
-    await asyncio.gather(*[run_account(s) for s in sessions])
+    await asyncio.gather(*[run_account(s, i) for i, s in enumerate(sessions)])
 
 
 if __name__ == "__main__":
