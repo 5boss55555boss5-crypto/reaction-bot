@@ -137,6 +137,8 @@ async def run_account(session_str, index):
             return
         if event.chat_id not in entity_ids:
             return
+        if random.random() > 0.7:
+            return
         name = getattr(event.chat, "username", None) or getattr(event.chat, "title", str(event.chat_id))
         asyncio.ensure_future(react(client, account, event.chat_id, event.message.id, name))
 
