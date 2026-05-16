@@ -195,6 +195,15 @@ async def run_account(session_str, index):
     await client.run_until_disconnected()
 
 
+async def run_account_safe(session_str, index):
+    while True:
+        try:
+            await run_account(session_str, index)
+        except Exception as e:
+            print(f"[SESSION_{index+1}] крах: {e} — перезапуск через 60с")
+            await asyncio.sleep(60)
+
+
 async def main():
     sessions = get_sessions()
     if not sessions:
@@ -202,7 +211,7 @@ async def main():
         return
     print(f"Запускаємо {len(sessions)} акаунт(ів)...")
     print("-" * 50)
-    await asyncio.gather(*[run_account(s, i) for i, s in enumerate(sessions)])
+    await asyncio.gather(*[run_account_safe(s, i) for i, s in enumerate(sessions)])
 
 
 if __name__ == "__main__":
