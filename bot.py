@@ -7,6 +7,7 @@ import os
 import random
 import sys
 from datetime import datetime
+from aiohttp import web
 
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
@@ -204,6 +205,16 @@ async def run_account_safe(session_str, index):
             await asyncio.sleep(60)
 
 
+async def _health_server():
+    port = int(os.environ.get("PORT", 8080))
+    app = web.Application()
+    app.router.add_get("/", lambda r: web.Response(text="ok"))
+    runner = web.AppRunner(app)
+    await runner.setup()
+    await web.TCPSite(runner, "0.0.0.0", port).start()
+    print(f"Health check on port {port}")
+
+
 async def main():
     sessions = get_sessions()
     if not sessions:
@@ -211,7 +222,10 @@ async def main():
         return
     print(f"Запускаємо {len(sessions)} акаунт(ів)...")
     print("-" * 50)
-    await asyncio.gather(*[run_account_safe(s, i) for i, s in enumerate(sessions)])
+    await asyncio.gather(
+        _health_server(),
+        *[run_account_safe(s, i) for i, s in enumerate(sessions)]
+    )
 
 
 if __name__ == "__main__":
