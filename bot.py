@@ -25,13 +25,14 @@ API_HASH = os.environ["API_HASH"]
 openai_client = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 CHANNELS = [
-    "football1Ukraine",
     "ualegioner",
-    "https://t.me/+5veDkHfkmyg4ODk6",
+    "https://t.me/+pkM68CXk_Ac4NmQ6",
     "https://t.me/+X1PYq8Fj0i0wYWNi",
     "https://t.me/+Xo_zUF2qmLIwODky",
+    "https://t.me/+yFmka68QXLMxNjIy",
     "https://t.me/+QdZUYYVGpB5jN2Qy",
     "https://t.me/+b0tq9Q-5EoVkZDRi",
+    "https://t.me/+nO9xkeCijOQ3YzBi",
 ]
 
 REACTIONS = [
